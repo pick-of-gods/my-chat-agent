@@ -1,28 +1,52 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "my-chat-agent",
+  "name": "ai-helper",
   "main": "src/server.ts",
-  "compatibility_date": "2025-08-03",
+  "compatibility_date": "2025-10-22",
   "compatibility_flags": ["nodejs_compat"],
+
+  // 🔗 Cloudflare AI binding
   "ai": {
     "binding": "AI",
     "remote": true
   },
-  "assets": {
-    "directory": "public"
+
+  // 🗃️ Cloudflare D1 database for local-cloud sync
+  "d1_databases": {
+    "AI_DB": {
+      "binding": "AI_DB",
+      "database_name": "ai-helper-db"
+    }
   },
+
+  // ⚡ Local resource sync (KV)
+  "kv_namespaces": [
+    { "binding": "SYNC_STORE", "id": "kv_ai_sync" }
+  ],
+
+  // 💬 Chat memory storage (Durable Object)
   "durable_objects": {
     "bindings": [
-      {
-        "name": "Chat",
-        "class_name": "Chat"
-      }
+      { "name": "Chat", "class_name": "Chat" }
     ]
   },
+
   "migrations": [
     {
       "tag": "v1",
       "new_sqlite_classes": ["Chat"]
     }
-  ]
+  ],
+
+  // 🌐 Optional static UI
+  "assets": {
+    "directory": "public"
+  },
+
+  // ⚙️ Custom environment variables
+  "vars": {
+    "LOCAL_BRIDGE_URL": "http://127.0.0.1:8788",
+    "SYNC_MODE": "bidirectional",
+    "DEBUG_LOGS": "true"
+  }
 }
